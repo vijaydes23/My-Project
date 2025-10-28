@@ -1,0 +1,20 @@
+import pandas as pd
+from surprise import Reader, Dataset, SVD
+from surprise.model_selection import train_test_split
+import pickle
+
+# डेटा लोड करें
+ratings = pd.read_csv('data/ratings.csv') 
+
+# डेटा को surprise फॉर्मेट में लोड करें
+reader = Reader(rating_scale=(0.5, 5.0))
+data = Dataset.load_from_df(ratings[['userId', 'movieId', 'rating']], reader)
+
+# SVD मॉडल को ट्रेन करें
+trainset = data.build_full_trainset()
+algo = SVD()
+algo.fit(trainset)
+
+# प्रशिक्षित मॉडल को सेव करें
+with open('model/svd_model.pkl', 'wb') as f:
+    pickle.dump(algo, f)
